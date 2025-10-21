@@ -14,7 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          profit: number
+          revenue: number
+          top_products: Json | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          profit?: number
+          revenue?: number
+          top_products?: Json | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          profit?: number
+          revenue?: number
+          top_products?: Json | null
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          last_transaction: string | null
+          name: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_transaction?: string | null
+          name: string
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_transaction?: string | null
+          name?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+          price: number
+          quantity: number
+          reorder_level: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          quantity?: number
+          reorder_level?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          quantity?: number
+          reorder_level?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sales: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string | null
+          date: string
+          id: string
+          items: Json
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          id?: string
+          items: Json
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          id?: string
+          items?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
