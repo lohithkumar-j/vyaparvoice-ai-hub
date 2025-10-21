@@ -9,6 +9,9 @@ import RecentActivities from "@/components/dashboard/RecentActivities";
 import InventoryView from "@/components/dashboard/InventoryView";
 import AnalyticsView from "@/components/dashboard/AnalyticsView";
 import CustomersView from "@/components/dashboard/CustomersView";
+import AIInsights from "@/components/dashboard/AIInsights";
+import ReceiptScanner from "@/components/dashboard/ReceiptScanner";
+import PosterGenerator from "@/components/dashboard/PosterGenerator";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,6 +62,13 @@ const Dashboard = () => {
                 
                 <div className="flex justify-center my-12">
                   <VoiceCommandButton />
+                </div>
+
+                <AIInsights />
+
+                <div className="grid md:grid-cols-2 gap-8 mt-8">
+                  <ReceiptScanner />
+                  <PosterGenerator />
                 </div>
 
                 <RecentActivities />

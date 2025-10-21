@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,24 +7,76 @@ import { toast } from "sonner";
 const VoiceCommandButton = () => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Check if browser supports Speech Recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'hi-IN'; // Hindi
+
+      recognitionRef.current.onresult = (event: any) => {
+        const current = event.resultIndex;
+        const transcriptText = event.results[current][0].transcript;
+        setTranscript(transcriptText);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+        if (transcript) {
+          processVoiceCommand(transcript);
+        }
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        toast.error(`Voice error: ${event.error}`);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [transcript]);
+
+  const processVoiceCommand = (command: string) => {
+    const lowerCommand = command.toLowerCase();
+    
+    if (lowerCommand.includes('inventory') || lowerCommand.includes('stock') || lowerCommand.includes('माल')) {
+      toast.success("Opening inventory view...");
+      setTimeout(() => setTranscript(""), 2000);
+    } else if (lowerCommand.includes('customer') || lowerCommand.includes('ग्राहक') || lowerCommand.includes('खाता')) {
+      toast.success("Opening customer ledger...");
+      setTimeout(() => setTranscript(""), 2000);
+    } else if (lowerCommand.includes('analytics') || lowerCommand.includes('report') || lowerCommand.includes('बिक्री')) {
+      toast.success("Opening analytics...");
+      setTimeout(() => setTranscript(""), 2000);
+    } else {
+      toast.info(`Command received: ${command}`);
+      setTimeout(() => setTranscript(""), 2000);
+    }
+  };
 
   const toggleListening = () => {
+    if (!recognitionRef.current) {
+      toast.error("Voice recognition not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+
     if (!isListening) {
+      setTranscript("");
       setIsListening(true);
-      toast.success("Voice command activated! Speak now...");
-      
-      // Simulate voice recognition
-      setTimeout(() => {
-        setTranscript("Inventory check karo");
-        setTimeout(() => {
-          setIsListening(false);
-          setTranscript("");
-          toast.info("Command received: Checking inventory...");
-        }, 2000);
-      }, 1500);
+      recognitionRef.current.start();
+      toast.success("Listening... Speak in Hindi or English!");
     } else {
       setIsListening(false);
-      setTranscript("");
+      recognitionRef.current.stop();
     }
   };
 

@@ -1,1 +1,10 @@
 project_id = "ahfcbbiorgmjpvuqzsih"
+
+[functions.generate-insights]
+verify_jwt = false
+
+[functions.scan-receipt]
+verify_jwt = false
+
+[functions.generate-poster]
+verify_jwt = false

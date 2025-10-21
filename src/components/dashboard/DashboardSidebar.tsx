@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Home, Package, TrendingUp, Users, Sparkles, FileText, LogOut } from "lucide-react";
+import { Home, Package, TrendingUp, Users, Sparkles, FileText, LogOut, Camera, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DashboardSidebarProps {
