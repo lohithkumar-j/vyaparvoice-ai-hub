@@ -1,20 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { User, Phone, IndianRupee } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CustomersView = () => {
+  const { user } = useAuth();
+
   const { data: customers, isLoading } = useQuery({
-    queryKey: ["customers"],
+    queryKey: ["customers", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!user?.id) return [];
+      const { data } = await supabase
         .from("customers")
         .select("*")
+        .eq("user_id", user.id)
         .order("name");
-      
-      if (error) throw error;
-      return data;
+      return data || [];
     },
+    enabled: !!user?.id,
   });
 
   if (isLoading) {

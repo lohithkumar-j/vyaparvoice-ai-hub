@@ -1,26 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";
 import { TrendingUp, DollarSign } from "lucide-react";
 
 const AnalyticsView = () => {
+  const { user } = useAuth();
+
   const { data: analytics, isLoading } = useQuery({
-    queryKey: ["analytics-week"],
+    queryKey: ["analytics-week", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!user?.id) return [];
+      const { data } = await supabase
         .from("analytics")
         .select("*")
+        .eq("user_id", user.id)
         .order("date", { ascending: true });
       
-      if (error) throw error;
-      return data.map(item => ({
+      return (data || []).map(item => ({
         ...item,
         date: new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
         revenue: Number(item.revenue),
         profit: Number(item.profit),
       }));
     },
+    enabled: !!user?.id,
   });
 
   if (isLoading) {

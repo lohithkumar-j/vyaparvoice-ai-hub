@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,13 +9,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 const PosterGenerator = () => {
+  const { user } = useAuth();
   const [businessName, setBusinessName] = useState("");
   const [offer, setOffer] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
 
   const generatePoster = async () => {
-    if (!businessName.trim()) {
+    if (!businessName.trim() || !user?.id) {
       toast.error("Please enter your business name");
       return;
     }
@@ -27,6 +29,7 @@ const PosterGenerator = () => {
         body: {
           businessName,
           offer: offer.trim() || "Special offers available!",
+          userId: user.id,
         },
       });
 

@@ -1,46 +1,57 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sparkles, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 const AIInsights = () => {
+  const { user } = useAuth();
   const [insights, setInsights] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Fetch business data for AI analysis
   const { data: analytics } = useQuery({
-    queryKey: ["analytics-latest"],
+    queryKey: ["analytics-latest", user?.id],
     queryFn: async () => {
+      if (!user?.id) return [];
       const { data } = await supabase
         .from("analytics")
         .select("*")
+        .eq("user_id", user.id)
         .order("date", { ascending: false })
         .limit(7);
       return data;
     },
+    enabled: !!user?.id,
   });
 
   const { data: inventory } = useQuery({
-    queryKey: ["inventory-summary"],
+    queryKey: ["inventory-summary", user?.id],
     queryFn: async () => {
+      if (!user?.id) return [];
       const { data } = await supabase
         .from("inventory")
-        .select("*");
+        .select("*")
+        .eq("user_id", user.id);
       return data;
     },
+    enabled: !!user?.id,
   });
 
   const { data: customers } = useQuery({
-    queryKey: ["customers-summary"],
+    queryKey: ["customers-summary", user?.id],
     queryFn: async () => {
+      if (!user?.id) return [];
       const { data } = await supabase
         .from("customers")
-        .select("*");
+        .select("*")
+        .eq("user_id", user.id);
       return data;
     },
+    enabled: !!user?.id,
   });
 
   const generateInsights = async () => {

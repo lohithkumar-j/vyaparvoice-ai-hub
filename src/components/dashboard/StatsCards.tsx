@@ -1,46 +1,52 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { TrendingUp, Package, Users, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 
 const StatsCards = () => {
+  const { user } = useAuth();
+
   const { data: analytics } = useQuery({
-    queryKey: ["analytics-today"],
+    queryKey: ["analytics-today", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!user?.id) return null;
+      const { data } = await supabase
         .from("analytics")
         .select("*")
+        .eq("user_id", user.id)
         .order("date", { ascending: false })
         .limit(1)
-        .single();
-      
-      if (error) throw error;
+        .maybeSingle();
       return data;
     },
+    enabled: !!user?.id,
   });
 
   const { data: inventoryCount } = useQuery({
-    queryKey: ["inventory-count"],
+    queryKey: ["inventory-count", user?.id],
     queryFn: async () => {
-      const { count, error } = await supabase
+      if (!user?.id) return 0;
+      const { count } = await supabase
         .from("inventory")
-        .select("*", { count: "exact", head: true });
-      
-      if (error) throw error;
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
       return count || 0;
     },
+    enabled: !!user?.id,
   });
 
   const { data: customersCount } = useQuery({
-    queryKey: ["customers-count"],
+    queryKey: ["customers-count", user?.id],
     queryFn: async () => {
-      const { count, error } = await supabase
+      if (!user?.id) return 0;
+      const { count } = await supabase
         .from("customers")
-        .select("*", { count: "exact", head: true });
-      
-      if (error) throw error;
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
       return count || 0;
     },
+    enabled: !!user?.id,
   });
 
   const stats = [

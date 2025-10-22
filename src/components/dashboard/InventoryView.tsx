@@ -1,20 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Package, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const InventoryView = () => {
+  const { user } = useAuth();
+
   const { data: inventory, isLoading } = useQuery({
-    queryKey: ["inventory"],
+    queryKey: ["inventory", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!user?.id) return [];
+      const { data } = await supabase
         .from("inventory")
         .select("*")
+        .eq("user_id", user.id)
         .order("name");
-      
-      if (error) throw error;
-      return data;
+      return data || [];
     },
+    enabled: !!user?.id,
   });
 
   if (isLoading) {

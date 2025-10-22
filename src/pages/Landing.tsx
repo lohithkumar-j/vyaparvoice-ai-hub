@@ -2,10 +2,12 @@ import { motion } from "framer-motion";
 import { Mic, TrendingUp, Package, Users, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const stats = [
     { label: "Active Businesses", value: "50,000+", icon: Users },
@@ -45,24 +47,38 @@ const Landing = () => {
               </p>
               
               <div className="flex flex-wrap gap-4">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-primary-glow hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 text-lg px-8"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  <Mic className="w-5 h-5 mr-2" />
-                  Start Speaking
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-                
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-secondary text-secondary hover:bg-secondary/10 text-lg px-8"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  View Dashboard
-                </Button>
+                {user ? (
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-primary to-primary-glow hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 text-lg px-8"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    <Mic className="w-5 h-5 mr-2" />
+                    Go to Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-primary to-primary-glow hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 text-lg px-8"
+                      onClick={() => navigate("/signup")}
+                    >
+                      <Mic className="w-5 h-5 mr-2" />
+                      Start Speaking
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                    
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-2 border-secondary text-secondary hover:bg-secondary/10 text-lg px-8"
+                      onClick={() => navigate("/login")}
+                    >
+                      Login
+                    </Button>
+                  </>
+                )}
               </div>
             </motion.div>
             
@@ -202,10 +218,10 @@ const Landing = () => {
             <Button
               size="lg"
               className="bg-gradient-to-r from-primary via-secondary to-success hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 text-lg px-12"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => user ? navigate("/dashboard") : navigate("/signup")}
             >
               <Mic className="w-5 h-5 mr-2" />
-              Get Started Free
+              {user ? "Go to Dashboard" : "Get Started Free"}
             </Button>
           </motion.div>
         </div>
