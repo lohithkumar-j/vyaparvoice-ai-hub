@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { TrendingUp, Package, Users, DollarSign } from "lucide-react";
@@ -6,6 +7,7 @@ import { motion } from "framer-motion";
 
 const StatsCards = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: analytics } = useQuery({
     queryKey: ["analytics-today", user?.id],
@@ -21,6 +23,7 @@ const StatsCards = () => {
       return data;
     },
     enabled: !!user?.id,
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   const { data: inventoryCount } = useQuery({
@@ -48,6 +51,65 @@ const StatsCards = () => {
     },
     enabled: !!user?.id,
   });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const analyticsChannel = supabase
+      .channel("analytics-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "analytics",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["analytics-today", user.id] });
+        }
+      )
+      .subscribe();
+
+    const inventoryChannel = supabase
+      .channel("inventory-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "inventory",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["inventory-count", user.id] });
+        }
+      )
+      .subscribe();
+
+    const customersChannel = supabase
+      .channel("customers-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "customers",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["customers-count", user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(analyticsChannel);
+      supabase.removeChannel(inventoryChannel);
+      supabase.removeChannel(customersChannel);
+    };
+  }, [user?.id, queryClient]);
 
   const stats = [
     {

@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
@@ -7,6 +8,7 @@ import { TrendingUp, DollarSign } from "lucide-react";
 
 const AnalyticsView = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: analytics, isLoading } = useQuery({
     queryKey: ["analytics-week", user?.id],
@@ -27,6 +29,31 @@ const AnalyticsView = () => {
     },
     enabled: !!user?.id,
   });
+
+  // Real-time subscription
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel("analytics-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "analytics",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["analytics-week", user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
 
   if (isLoading) {
     return <div className="text-center py-12">Loading analytics...</div>;

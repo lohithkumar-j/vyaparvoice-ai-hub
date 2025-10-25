@@ -1,11 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { User, Phone, IndianRupee } from "lucide-react";
+import { User, Phone, IndianRupee, Plus } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import AddCustomerDialog from "./AddCustomerDialog";
+import CustomerDetailDialog from "./CustomerDetailDialog";
 
 const CustomersView = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
 
   const { data: customers, isLoading } = useQuery({
     queryKey: ["customers", user?.id],
@@ -21,15 +28,46 @@ const CustomersView = () => {
     enabled: !!user?.id,
   });
 
+  // Real-time subscription
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel("customers-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "customers",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["customers", user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
   if (isLoading) {
     return <div className="text-center py-12">Loading customers...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Customer Ledger</h1>
-        <p className="text-muted-foreground">Manage customer credit and payment history</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Customer Ledger</h1>
+          <p className="text-muted-foreground">Manage customer credit and payment history</p>
+        </div>
+        <Button onClick={() => setAddDialogOpen(true)} size="lg">
+          <Plus className="w-5 h-5 mr-2" />
+          Add Customer
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -43,7 +81,8 @@ const CustomersView = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="glass-card p-6 rounded-2xl hover:scale-105 transition-all duration-300"
+              className="glass-card p-6 rounded-2xl hover:scale-105 transition-all duration-300 cursor-pointer"
+              onClick={() => setSelectedCustomer(customer)}
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
@@ -90,6 +129,13 @@ const CustomersView = () => {
           );
         })}
       </div>
+
+      <AddCustomerDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+      <CustomerDetailDialog
+        open={!!selectedCustomer}
+        onOpenChange={(open) => !open && setSelectedCustomer(null)}
+        customer={selectedCustomer}
+      />
     </div>
   );
 };

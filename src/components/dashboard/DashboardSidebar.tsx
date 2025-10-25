@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
-import { Home, Package, TrendingUp, Users, Sparkles, FileText, LogOut, Camera, Image } from "lucide-react";
+import { Home, Package, TrendingUp, Users, Sparkles, FileText, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardSidebarProps {
   activeView: string;
@@ -9,12 +11,20 @@ interface DashboardSidebarProps {
 }
 
 const DashboardSidebar = ({ activeView, setActiveView, onClose }: DashboardSidebarProps) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+  
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: Home },
     { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'customers', label: 'Customers', icon: Users },
   ];
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login");
+  };
 
   return (
     <motion.aside
@@ -61,11 +71,17 @@ const DashboardSidebar = ({ activeView, setActiveView, onClose }: DashboardSideb
 
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border space-y-2">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200">
+        <button 
+          onClick={() => navigate("/reports")}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
+        >
           <FileText className="w-5 h-5" />
           <span className="font-medium">Reports</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-all duration-200">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-all duration-200"
+        >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Logout</span>
         </button>
