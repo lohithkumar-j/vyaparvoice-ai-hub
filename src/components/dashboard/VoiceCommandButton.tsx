@@ -3,11 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const VoiceCommandButton = () => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if browser supports Speech Recognition
@@ -45,21 +48,66 @@ const VoiceCommandButton = () => {
     };
   }, [transcript]);
 
-  const processVoiceCommand = (command: string) => {
+  const processVoiceCommand = async (command: string) => {
     const lowerCommand = command.toLowerCase();
     
-    if (lowerCommand.includes('inventory') || lowerCommand.includes('stock') || lowerCommand.includes('माल')) {
+    console.log('Processing voice command:', command);
+
+    // Navigation commands
+    if (lowerCommand.includes('inventory') || lowerCommand.includes('stock') || lowerCommand.includes('माल') || lowerCommand.includes('स्टॉक')) {
       toast.success("Opening inventory view...");
+      navigate('/dashboard?tab=inventory');
       setTimeout(() => setTranscript(""), 2000);
-    } else if (lowerCommand.includes('customer') || lowerCommand.includes('ग्राहक') || lowerCommand.includes('खाता')) {
+    } 
+    else if (lowerCommand.includes('customer') || lowerCommand.includes('ग्राहक') || lowerCommand.includes('खाता')) {
       toast.success("Opening customer ledger...");
+      navigate('/dashboard?tab=customers');
       setTimeout(() => setTranscript(""), 2000);
-    } else if (lowerCommand.includes('analytics') || lowerCommand.includes('report') || lowerCommand.includes('बिक्री')) {
+    } 
+    else if (lowerCommand.includes('analytics') || lowerCommand.includes('report') || lowerCommand.includes('बिक्री') || lowerCommand.includes('विश्लेषण')) {
       toast.success("Opening analytics...");
+      navigate('/dashboard?tab=analytics');
       setTimeout(() => setTranscript(""), 2000);
-    } else {
-      toast.info(`Command received: ${command}`);
+    }
+    else if (lowerCommand.includes('insight') || lowerCommand.includes('ai') || lowerCommand.includes('suggest') || lowerCommand.includes('सुझाव')) {
+      toast.success("Generating AI Insights...");
+      try {
+        // Fetch business data
+        const { data: analytics } = await supabase.from('analytics').select('*').limit(10);
+        const { data: inventory } = await supabase.from('inventory').select('*').limit(10);
+        const { data: customers } = await supabase.from('customers').select('*').limit(10);
+        
+        const businessData = {
+          analytics: analytics || [],
+          inventory: inventory || [],
+          customers: customers || [],
+        };
+
+        const { data, error } = await supabase.functions.invoke('generate-insights', {
+          body: { businessData }
+        });
+
+        if (error) throw error;
+
+        toast.success("AI Insights generated successfully!");
+        console.log('Insights:', data.insights);
+      } catch (error) {
+        console.error('Error generating insights:', error);
+        toast.error("Failed to generate insights");
+      }
       setTimeout(() => setTranscript(""), 2000);
+    }
+    else if (lowerCommand.includes('poster') || lowerCommand.includes('पोस्टर')) {
+      toast.info("Please use the Poster Generator in the dashboard");
+      setTimeout(() => setTranscript(""), 2000);
+    }
+    else if (lowerCommand.includes('receipt') || lowerCommand.includes('scan') || lowerCommand.includes('रसीद')) {
+      toast.info("Please use the Receipt Scanner in the dashboard");
+      setTimeout(() => setTranscript(""), 2000);
+    }
+    else {
+      toast.info(`Command: "${command}". Try: inventory, customers, analytics, or insights`);
+      setTimeout(() => setTranscript(""), 3000);
     }
   };
 
