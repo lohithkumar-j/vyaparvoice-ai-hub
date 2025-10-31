@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Home, Package, TrendingUp, Users, Sparkles, FileText, LogOut } from "lucide-react";
+import { Home, Package, TrendingUp, Users, Sparkles, FileText, LogOut, DollarSign, FileSpreadsheet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -71,6 +71,20 @@ const DashboardSidebar = ({ activeView, setActiveView, onClose }: DashboardSideb
 
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border space-y-2">
+        <button 
+          onClick={() => navigate("/invoice")}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
+        >
+          <FileSpreadsheet className="w-5 h-5" />
+          <span className="font-medium">Invoice & Billing</span>
+        </button>
+        <button 
+          onClick={() => navigate("/expenses")}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
+        >
+          <DollarSign className="w-5 h-5" />
+          <span className="font-medium">Expenses</span>
+        </button>
         <button 
           onClick={() => navigate("/reports")}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
