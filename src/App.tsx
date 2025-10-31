@@ -15,7 +15,13 @@ import Expenses from "./pages/Expenses";
 import Invoice from "./pages/Invoice";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
