@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import AddInventoryDialog from "./AddInventoryDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { mockInventoryProducts } from "@/utils/mockData";
 
 const InventoryView = () => {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ const InventoryView = () => {
         .select("*")
         .eq("user_id", user.id)
         .order("name");
-      return data || [];
+      return [...(data || []), ...mockInventoryProducts];
     },
     enabled: !!user?.id,
   });

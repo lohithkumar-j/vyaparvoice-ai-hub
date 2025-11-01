@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";
 import { TrendingUp, DollarSign } from "lucide-react";
+import { mockAnalyticsData } from "@/utils/mockData";
 
 const AnalyticsView = () => {
   const { user } = useAuth();
@@ -20,12 +21,14 @@ const AnalyticsView = () => {
         .eq("user_id", user.id)
         .order("date", { ascending: true });
       
-      return (data || []).map(item => ({
+      const formattedData = (data || []).map(item => ({
         ...item,
         date: new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
         revenue: Number(item.revenue),
         profit: Number(item.profit),
       }));
+      
+      return formattedData.length > 0 ? formattedData : mockAnalyticsData;
     },
     enabled: !!user?.id,
   });

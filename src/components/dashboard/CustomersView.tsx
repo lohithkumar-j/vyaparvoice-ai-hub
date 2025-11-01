@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import AddCustomerDialog from "./AddCustomerDialog";
 import CustomerDetailDialog from "./CustomerDetailDialog";
+import { mockCustomers } from "@/utils/mockData";
 
 const CustomersView = () => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ const CustomersView = () => {
         .select("*")
         .eq("user_id", user.id)
         .order("name");
-      return data || [];
+      return [...(data || []), ...mockCustomers];
     },
     enabled: !!user?.id,
   });

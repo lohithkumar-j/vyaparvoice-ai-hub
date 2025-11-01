@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -16,6 +16,15 @@ import PosterGenerator from "@/components/dashboard/PosterGenerator";
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState<'overview' | 'inventory' | 'analytics' | 'customers'>('overview');
+
+  useEffect(() => {
+    const handleNavigateToView = (e: CustomEvent) => {
+      setActiveView(e.detail);
+    };
+    
+    window.addEventListener('navigate-to-view' as any, handleNavigateToView as any);
+    return () => window.removeEventListener('navigate-to-view' as any, handleNavigateToView as any);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,8 +76,12 @@ const Dashboard = () => {
                 <AIInsights />
 
                 <div className="grid md:grid-cols-2 gap-8 mt-8">
-                  <ReceiptScanner />
-                  <PosterGenerator />
+                  <div data-section="receipt-scanner">
+                    <ReceiptScanner />
+                  </div>
+                  <div data-section="poster-generator">
+                    <PosterGenerator />
+                  </div>
                 </div>
 
                 <RecentActivities />

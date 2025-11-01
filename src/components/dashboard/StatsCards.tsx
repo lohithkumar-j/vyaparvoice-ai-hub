@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { TrendingUp, Package, Users, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
+import { mockStatsData } from "@/utils/mockData";
 
 const StatsCards = () => {
   const { user } = useAuth();
@@ -114,31 +115,31 @@ const StatsCards = () => {
   const stats = [
     {
       label: "Today's Revenue",
-      value: `₹${analytics?.revenue?.toLocaleString() || "0"}`,
+      value: `₹${analytics?.revenue?.toLocaleString() || mockStatsData.todayRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: "primary",
-      trend: "+12.5%",
+      trend: `+${mockStatsData.revenueTrend}%`,
     },
     {
       label: "Total Products",
-      value: inventoryCount || 0,
+      value: inventoryCount || mockStatsData.totalProducts,
       icon: Package,
       color: "secondary",
-      trend: "+5",
+      trend: `+${mockStatsData.productsTrend}`,
     },
     {
       label: "Active Customers",
-      value: customersCount || 0,
+      value: customersCount || mockStatsData.activeCustomers,
       icon: Users,
       color: "success",
-      trend: "+8",
+      trend: `+${mockStatsData.customersTrend}`,
     },
     {
       label: "Today's Profit",
-      value: `₹${analytics?.profit?.toLocaleString() || "0"}`,
+      value: `₹${analytics?.profit?.toLocaleString() || mockStatsData.todayProfit.toLocaleString()}`,
       icon: TrendingUp,
       color: "primary",
-      trend: "+18.2%",
+      trend: `+${mockStatsData.profitTrend}%`,
     },
   ];
 

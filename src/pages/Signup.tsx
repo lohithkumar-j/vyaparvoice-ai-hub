@@ -109,10 +109,10 @@ const Signup = () => {
         className="glass-card p-8 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
       >
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2 text-white">
             VyaparAI
           </h1>
-          <p className="text-muted-foreground">Create your account to get started</p>
+          <p className="text-white/80">Create your account to get started</p>
         </div>
 
         <form onSubmit={handleSignup} className="space-y-4">

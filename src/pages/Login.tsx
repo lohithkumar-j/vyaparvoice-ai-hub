@@ -62,10 +62,10 @@ const Login = () => {
         className="glass-card p-8 rounded-2xl w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2 text-white">
             VyaparAI
           </h1>
-          <p className="text-muted-foreground">Welcome back! Login to continue</p>
+          <p className="text-white/80">Welcome back! Login to continue</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
