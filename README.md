@@ -1,73 +1,81 @@
-# Welcome to your Lovable project
+VyaparAI: Voice-First Business Co-Pilot for Kirana Stores
+Overview
+VyaparAI is a cutting-edge AI-powered platform designed specifically for Indian kirana stores. It revolutionizes the way neighborhood shops manage inventory, customer credit (khata), billing, and marketing by leveraging voice commands, AI vision, and multi-language support, making digital transformation accessible, simple, and efficient.
 
-## Project info
+Features
+Voice-First Interface: Speak naturally in Hindi or English to manage inventory, customers, and sales.
 
-**URL**: https://lovable.dev/projects/e037d514-4aaf-4639-bba1-2cb5869955f0
+Real-time Inventory Management: Automatic tracking and alerts for low stock.
 
-## How can I edit this code?
+Digital Khata: AI-powered customer credit ledger with smart reminders.
 
-There are several ways of editing your application.
+Receipt Scanning: Upload bills; AI extracts and organizes data.
 
-**Use Lovable**
+AI-generated Marketing: Create promotional posters instantly using OpenAI’s DALL·E 3.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e037d514-4aaf-4639-bba1-2cb5869955f0) and start prompting.
+Multilingual Support: Designed for Indian languages with advanced Hindi NLP.
 
-Changes made via Lovable will be committed automatically to this repo.
+Offline Support: Works even with intermittent connectivity.
 
-**Use your preferred IDE**
+Secure Authentication: Email/password and Google OAuth sign-up & login.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Technology Stack
+Frontend: React, TypeScript, Tailwind CSS, Framer Motion
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Backend: Supabase (PostgreSQL, Realtime, Auth, Storage)
 
-Follow these steps:
+AI APIs: OpenAI Whisper (Voice), GPT-4 (Processing & Vision), Gemini(IMagery)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Hosting: Lovable.dev serverless platform
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Getting Started
+Prerequisites
+Node.js (v16+)
 
-# Step 3: Install the necessary dependencies.
-npm i
+Yarn or npm
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Supabase account and project set up with API keys
 
-**Edit a file directly in GitHub**
+OpenAI API key with access to GPT-4 and DALL·E 3
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Installation
+bash
+git clone https://github.com/yourusername/vyaparai.git
+cd vyaparai
+yarn install
+Configuration
+Add your Supabase credentials in .env.local
 
-**Use GitHub Codespaces**
+Add your OpenAI API key in .env.local
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Example .env.local:
 
-## What technologies are used for this project?
+text
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_OPENAI_API_KEY=your-openai-api-key
+Running the App
+bash
+yarn dev
+Open http://localhost:3000 in your browser to start.
 
-This project is built with:
+Usage
+Sign up or login using email or Google OAuth
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Use voice commands in multiple languages to update and check inventory
 
-## How can I deploy this project?
+Upload receipts to automatically track purchases
 
-Simply open [Lovable](https://lovable.dev/projects/e037d514-4aaf-4639-bba1-2cb5869955f0) and click on Share -> Publish.
+Manage customer credit and send reminders
 
-## Can I connect a custom domain to my Lovable project?
+Generate marketing posters via AI on the fly
 
-Yes, you can!
+Contributing
+Contributions are welcome! Please open issues or pull requests for bug fixes, features, or documentation improvements.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+License
+This project is licensed under the MIT License.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+For detailed documentation, feature description, and API integration info, refer to the /docs directory or the project wiki on GitHub.
+
+VyaparAI: Empowering India's Kirana Stores with Voice and AI Technology.
